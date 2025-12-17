@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов»
 
 * Студент: [Иван Шуклин](https://up.htmlacademy.ru/react-individual/3/user/2430255).
-* Наставник: `Неизвестно`.
+* Наставник: [Юрий Последов](https://htmlacademy.ru/profile/unidentifiedraccoon).
 
 ---
 
