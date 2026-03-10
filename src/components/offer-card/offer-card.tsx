@@ -27,12 +27,10 @@ function OfferCardRender ({offer, onActiveOfferChange}: OfferCardProps) {
       return;
     }
 
-    dispatch(
-      changeFavoriteStatus({
-        offerId: offer.id,
-        status: offer.isFavorite ? 0 : 1
-      })
-    );
+    dispatch(changeFavoriteStatus({
+      offerId: offer.id,
+      isFavorite: !offer.isFavorite
+    }));
   };
 
   const handleMouseEnter = useCallback(() => {

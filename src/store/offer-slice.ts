@@ -6,7 +6,7 @@ import { AxiosInstance } from 'axios';
 import { Offer } from '../types/offer';
 import { Comment } from '../types/comment';
 import { State } from '../types/main-state';
-import { RequestStatus } from '../const/const';
+import { APIRoute, RequestStatus } from '../const/const';
 import { changeFavoriteStatus } from './main-slice';
 
 const NEARBY_LIMIT = 3;
@@ -35,7 +35,7 @@ export const fetchOfferById = createAsyncThunk<
   { extra: AxiosInstance; rejectValue: string }
 >('offer/fetchOfferById', async (id, { extra: api, rejectWithValue }) => {
   try {
-    const { data } = await api.get<Offer>(`/offers/${id}`);
+    const { data } = await api.get<Offer>(`${APIRoute.Offers}/${id}`);
     return data;
   } catch {
     return rejectWithValue('Failed to load offer.');
@@ -48,7 +48,7 @@ export const fetchNearbyOffers = createAsyncThunk<
   { extra: AxiosInstance; rejectValue: string }
 >('offer/fetchNearbyOffers', async (id, { extra: api, rejectWithValue }) => {
   try {
-    const { data } = await api.get<Offer[]>(`/offers/${id}/nearby`);
+    const { data } = await api.get<Offer[]>(`${APIRoute.Offers}/${id}/nearby`);
     return data;
   } catch {
     return rejectWithValue('Failed to load nearby offers.');
@@ -61,7 +61,7 @@ export const fetchComments = createAsyncThunk<
   { extra: AxiosInstance; rejectValue: string }
 >('offer/fetchComments', async (id, { extra: api, rejectWithValue }) => {
   try {
-    const { data } = await api.get<Comment[]>(`/comments/${id}`);
+    const { data } = await api.get<Comment[]>(`${APIRoute.Comments}/${id}`);
     return data;
   } catch {
     return rejectWithValue('Failed to load comments.');
@@ -74,7 +74,7 @@ export const sendComment = createAsyncThunk<
   { extra: AxiosInstance; rejectValue: string }
 >('offer/sendComment', async ({ offerId, rating, comment }, { extra: api, rejectWithValue }) => {
   try {
-    const { data } = await api.post<Comment>(`/comments/${offerId}`, {
+    const { data } = await api.post<Comment>(`${APIRoute.Comments}/${offerId}`, {
       rating,
       comment,
     });

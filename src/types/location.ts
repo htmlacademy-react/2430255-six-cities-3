@@ -3,4 +3,3 @@ export type Location = {
   longitude: number;
   zoom: number;
 };
-

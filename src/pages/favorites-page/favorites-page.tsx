@@ -2,20 +2,19 @@ import { Helmet } from 'react-helmet-async';
 import { useEffect } from 'react';
 import { Link, generatePath, useNavigate } from 'react-router-dom';
 import { PageTitle, AppRoute, AuthorizationStatus } from '../../const/const';
-import { fetchFavorites, selectFavorites } from '../../store/favorites-slice';
+import { fetchFavorites, selectFavoritesByCity } from '../../store/favorites-slice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { changeFavoriteStatus } from '../../store/main-slice';
 import { selectAuthStatus } from '../../store/auth-slice';
-import { Offer } from '../../types/offer';
 import Footer from './components/footer';
 
 export default function FavoritesPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const authorizationStatus = useAppSelector(selectAuthStatus);
+  const favoritesByCity = useAppSelector(selectFavoritesByCity);
 
-  const favorites = useAppSelector(selectFavorites);
-  const isEmpty = favorites.length === 0;
+  const isEmpty = Object.keys(favoritesByCity).length === 0;
 
   const handleBookmarkClick = (offerId: string) => {
     if (authorizationStatus !== AuthorizationStatus.Auth) {
@@ -25,7 +24,7 @@ export default function FavoritesPage() {
 
     dispatch(changeFavoriteStatus({
       offerId,
-      status: 0
+      isFavorite: false
     }));
   };
 
@@ -48,62 +47,79 @@ export default function FavoritesPage() {
 
             {!isEmpty ? (
               <ul className="favorites__list">
-                {favorites.map((offer: Offer) => (
-                  <li key={offer.id} className="favorites__locations-items">
-                    <div className="favorites__places">
-                      <article className="favorites__card place-card">
-                        {offer.isPremium && (
-                          <div className="place-card__mark">
-                            <span>Premium</span>
-                          </div>
-                        )}
+                {Object.entries(favoritesByCity).map(([city, offers]) => (
+                  <li key={city} className="favorites__locations-items">
 
-                        <div className="favorites__image-wrapper place-card__image-wrapper">
-                          <Link to={generatePath(AppRoute.Offer, { id: offer.id })}>
-                            <img
-                              className="place-card__image"
-                              src={offer.previewImage}
-                              width={150}
-                              height={110}
-                              alt={offer.title}
-                            />
-                          </Link>
-                        </div>
-
-                        <div className="favorites__card-info place-card__info">
-                          <div className="place-card__price-wrapper">
-                            <div className="place-card__price">
-                              <b className="place-card__price-value">€{offer.price}</b>
-                              <span className="place-card__price-text">/&nbsp;night</span>
-                            </div>
-
-                            <button
-                              className="place-card__bookmark-button place-card__bookmark-button--active button"
-                              type="button"
-                              onClick={() => handleBookmarkClick(offer.id)}
-                            >
-                              <svg className="place-card__bookmark-icon" width={18} height={19}>
-                                <use xlinkHref="#icon-bookmark" />
-                              </svg>
-                              <span className="visually-hidden">In bookmarks</span>
-                            </button>
-                          </div>
-
-                          <div className="place-card__rating rating">
-                            <div className="place-card__stars rating__stars">
-                              <span style={{ width: `${Math.round(offer.rating) * 20}%` }} />
-                              <span className="visually-hidden">Rating</span>
-                            </div>
-                          </div>
-
-                          <h2 className="place-card__name">
-                            <Link to={generatePath(AppRoute.Offer, { id: offer.id })}>{offer.title}</Link>
-                          </h2>
-
-                          <p className="place-card__type">{offer.type}</p>
-                        </div>
-                      </article>
+                    <div className="favorites__locations locations locations--current">
+                      <div className="locations__item">
+                        <a className="locations__item-link">
+                          <span>{city}</span>
+                        </a>
+                      </div>
                     </div>
+
+                    <div className="favorites__places">
+                      {offers.map((offer) => (
+                        <article key={offer.id} className="favorites__card place-card">
+
+                          {offer.isPremium && (
+                            <div className="place-card__mark">
+                              <span>Premium</span>
+                            </div>
+                          )}
+
+                          <div className="favorites__image-wrapper place-card__image-wrapper">
+                            <Link to={generatePath(AppRoute.Offer, { id: offer.id })}>
+                              <img
+                                className="place-card__image"
+                                src={offer.previewImage}
+                                width={150}
+                                height={110}
+                                alt={offer.title}
+                              />
+                            </Link>
+                          </div>
+
+                          <div className="favorites__card-info place-card__info">
+
+                            <div className="place-card__price-wrapper">
+                              <div className="place-card__price">
+                                <b className="place-card__price-value">€{offer.price}</b>
+                                <span className="place-card__price-text">/&nbsp;night</span>
+                              </div>
+
+                              <button
+                                className="place-card__bookmark-button place-card__bookmark-button--active button"
+                                type="button"
+                                onClick={() => handleBookmarkClick(offer.id)}
+                              >
+                                <svg className="place-card__bookmark-icon" width={18} height={19}>
+                                  <use xlinkHref="#icon-bookmark" />
+                                </svg>
+                                <span className="visually-hidden">In bookmarks</span>
+                              </button>
+                            </div>
+
+                            <div className="place-card__rating rating">
+                              <div className="place-card__stars rating__stars">
+                                <span style={{ width: `${(offer.rating / 5) * 100}%` }} />
+                                <span className="visually-hidden">Rating</span>
+                              </div>
+                            </div>
+
+                            <h2 className="place-card__name">
+                              <Link to={generatePath(AppRoute.Offer, { id: offer.id })}>
+                                {offer.title}
+                              </Link>
+                            </h2>
+
+                            <p className="place-card__type">{offer.type}</p>
+
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
                   </li>
                 ))}
               </ul>

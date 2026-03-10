@@ -2,7 +2,6 @@ import {
   createSlice,
   PayloadAction,
   createAsyncThunk,
-  createSelector
 } from '@reduxjs/toolkit';
 import { AxiosInstance } from 'axios';
 import { CITIES } from '../const/cities';
@@ -10,6 +9,7 @@ import { MainState, State } from '../types/main-state';
 import { City } from '../types/city';
 import { Offer } from '../types/offer';
 import {
+  APIRoute,
   SORTING_OPTIONS,
   SortOption,
   RequestStatus,
@@ -29,8 +29,8 @@ export const fetchOffers = createAsyncThunk<
   { extra: AxiosInstance; rejectValue: string }
 >('main/fetchOffers', async (_arg, { extra: api, rejectWithValue }) => {
   try {
-    const response = await api.get<Offer[]>('/offers');
-    return response.data;
+    const { data } = await api.get<Offer[]>(APIRoute.Offers);
+    return data;
   } catch {
     return rejectWithValue(
       'Failed to load offers. Check your connection to the server.'
@@ -40,16 +40,18 @@ export const fetchOffers = createAsyncThunk<
 
 export const changeFavoriteStatus = createAsyncThunk<
   Offer,
-  { offerId: string; status: number },
+  { offerId: string; isFavorite: boolean },
   { extra: AxiosInstance; rejectValue: string }
 >(
   'main/changeFavoriteStatus',
-  async ({ offerId, status }, { extra: api, rejectWithValue }) => {
+  async ({ offerId, isFavorite }, { extra: api, rejectWithValue }) => {
     try {
-      const apiStatus = status ? 1 : 0;
+      const status = Number(isFavorite);
+
       const { data } = await api.post<Offer>(
-        `/favorite/${offerId}/${apiStatus}`
+        `${APIRoute.Favorite}/${offerId}/${status}`
       );
+
       return data;
     } catch {
       return rejectWithValue('Failed to change favorite status.');
@@ -109,10 +111,5 @@ export const selectOffersLoadingStatus = (state: State) =>
 
 export const selectOffersError = (state: State) =>
   state.main.offersError;
-
-export const selectFavoritesCount = createSelector(
-  [selectOffers],
-  (offers) => offers.filter((offer) => offer.isFavorite).length
-);
 
 export default mainSlice.reducer;

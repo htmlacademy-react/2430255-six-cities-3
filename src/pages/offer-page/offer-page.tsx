@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { AppRoute, PageTitle, AuthorizationStatus } from '../../const/const';
@@ -33,6 +33,17 @@ export default function OfferPage() {
   const isLoading = useAppSelector(selectIsOfferLoading);
   const error = useAppSelector(selectOfferError);
 
+  const MAX_GALLERY_IMAGES = 6;
+  const MAX_COMMENTS = 10;
+
+  const sortedComments = useMemo(
+    () =>
+      [...comments]
+        .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+        .slice(0, MAX_COMMENTS),
+    [comments]
+  );
+
   const handleBookmarkClick = () => {
     if (!currentOffer) {
       return;
@@ -46,7 +57,7 @@ export default function OfferPage() {
     dispatch(
       changeFavoriteStatus({
         offerId: currentOffer.id,
-        status: currentOffer.isFavorite ? 0 : 1
+        isFavorite: !currentOffer.isFavorite
       })
     );
   };
@@ -91,7 +102,7 @@ export default function OfferPage() {
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              {currentOffer.images.map((image) => (
+              {currentOffer.images.slice(0, MAX_GALLERY_IMAGES).map((image) => (
                 <div key={image} className="offer__image-wrapper">
                   <img
                     className="offer__image"
@@ -189,7 +200,7 @@ export default function OfferPage() {
                   Reviews · <span className="reviews__amount">{comments.length}</span>
                 </h2>
 
-                <Review authorizationStatus={authorizationStatus} comments={comments} />
+                <Review authorizationStatus={authorizationStatus} comments={sortedComments} />
               </section>
             </div>
           </div>

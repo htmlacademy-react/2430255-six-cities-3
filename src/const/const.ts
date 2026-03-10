@@ -7,19 +7,6 @@ export const CITIES = [
   'Dusseldorf',
 ] as const;
 
-export const OFFER_FEATURES = [
-  'Wi-Fi',
-  'Washing machine',
-  'Towels',
-  'Heating',
-  'Coffee machine',
-  'Baby seat',
-  'Kitchen',
-  'Dishwasher',
-  'Cable TV',
-  'Fridge',
-];
-
 export const OFFER_TYPE_LABEL = {
   apartment: 'Apartment',
   room: 'Room',
@@ -51,6 +38,7 @@ export const APIRoute = {
   Login: '/login',
   Logout: '/logout',
   Favorite: '/favorite',
+  Comments: '/comments',
 } as const;
 
 export enum AuthorizationStatus {
@@ -65,11 +53,6 @@ export enum PageTitle {
   Favorites = '6 Cities. Favorites',
   Offer = '6 Cities. Offer',
   NotFound = '6 Cities. Page not found',
-}
-
-export enum HeaderMode {
-  Default = 'default',
-  Login = 'login',
 }
 
 export enum RequestStatus {
