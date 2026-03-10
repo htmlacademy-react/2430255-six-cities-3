@@ -1,0 +1,8 @@
+.locations--login .locations__item-link {
+  border: none;
+  cursor: pointer;
+}
+
+.locations--login .locations__item-link:hover {
+  background-color: #3069a6;
+}

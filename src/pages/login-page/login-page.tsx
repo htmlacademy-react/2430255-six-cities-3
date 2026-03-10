@@ -1,12 +1,23 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../../store/api-actions';
+import { cityChanged } from '../../store/main-slice';
 import { useAppDispatch } from '../../store/hooks';
-import { PageTitle } from '../../const/const';
+import { PageTitle, AppRoute } from '../../const/const';
+import { CITIES } from '../../const/cities';
+import './login-page.css';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [error, setError] = useState<string | null>(null);
+
+  const randomCity = useMemo(
+    () => CITIES[Math.floor(Math.random() * CITIES.length)],
+    []
+  );
 
   const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -21,6 +32,11 @@ export default function LoginPage() {
     } catch (err) {
       setError('Invalid email or password');
     }
+  };
+
+  const handleCityClick = () => {
+    dispatch(cityChanged(randomCity));
+    navigate(AppRoute.Main);
   };
 
   return (
@@ -71,9 +87,13 @@ export default function LoginPage() {
 
           <section className="locations locations--login locations--current">
             <div className="locations__item">
-              <a className="locations__item-link" href="#">
-                <span>Amsterdam</span>
-              </a>
+              <button
+                className="locations__item-link"
+                type="button"
+                onClick={handleCityClick}
+              >
+                <span>{randomCity.name}</span>
+              </button>
             </div>
           </section>
         </div>
